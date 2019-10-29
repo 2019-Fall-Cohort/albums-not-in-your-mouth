@@ -22,11 +22,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(ArtistController.class)
 @RunWith(SpringRunner.class)
-public class AuthorControllerWebLayerTest {
+public class ArtistControllerWebLayerTest {
     @Autowired
     private MockMvc mockMvc;
     @MockBean
-    private ArtistRepository artistRepo;
+    private ArtistService artistService;
 
     private Artist testArtist;
     @Before
@@ -36,7 +36,7 @@ public class AuthorControllerWebLayerTest {
 
     @Test
     public void shouldReturnAllArtists() throws Exception {
-         when(artistRepo.findAll()).thenReturn(Collections.singletonList(testArtist));
+        when(artistService.fetchAllArtists()).thenReturn(Collections.singletonList(testArtist));
          mockMvc.perform(get("/api/artists"))
                 .andDo(print())
                 .andExpect(status().isOk())

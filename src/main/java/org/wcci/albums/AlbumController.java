@@ -10,16 +10,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/albums")
 public class AlbumController {
-	private AlbumRepository albumRepo;
+	
+	private AlbumService albumService;
 	
 	@GetMapping("")
 	public List<Album> fetchAll() {
-		return (List<Album>) albumRepo.findAll();
+		return albumService.fetchAllAlbums();
 	}
 	
 	@GetMapping("/{id}")
 	public Album fetchById(@PathVariable Long id) {
-		return albumRepo.findById(id).get();
+		return albumService.fetchAlbum(id);
 	}
 
 }
