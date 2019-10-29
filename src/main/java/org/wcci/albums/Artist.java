@@ -1,11 +1,9 @@
 package org.wcci.albums;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 @Entity
 public class Artist {
@@ -15,6 +13,8 @@ public class Artist {
 	private String name;
 	@OneToMany(mappedBy="artist")
 	private List<Album> albums;
+	@ElementCollection
+	private List<Comment> comments;
 
 	protected Artist() {}
 	public Artist(String name) {
@@ -62,4 +62,14 @@ public class Artist {
 		return true;
 	}
 
+	public void addComment(Comment comment) {
+		if(comments==null){
+			comments = new ArrayList<>();
+		}
+		comments.add(comment);
+	}
+
+	public List<Comment> getComments() {
+		return comments;
+	}
 }
