@@ -21,7 +21,7 @@ public class Tag {
     protected Tag(){}
     public Tag(String name) {
         this.name = name;
-        artists = new ArrayList<>();
+
         albums = new ArrayList<>();
     }
 
@@ -30,6 +30,9 @@ public class Tag {
     }
 
     public void addArtist(Artist artist) {
+        if(artists == null){
+            artists = new ArrayList<>();
+        }
         artists.add(artist);
     }
 
