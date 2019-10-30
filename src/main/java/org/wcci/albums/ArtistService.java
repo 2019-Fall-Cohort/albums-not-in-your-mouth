@@ -10,7 +10,7 @@ public class ArtistService {
     @Autowired
     private ArtistRepository artistRepo;
 
-    public Artist addArtist(Artist artist) {
+    public Artist saveArtist(Artist artist) {
         return artistRepo.save(artist);
     }
 
