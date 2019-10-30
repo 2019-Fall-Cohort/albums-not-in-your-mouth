@@ -9,6 +9,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.wcci.albums.controllers.ArtistController;
+import org.wcci.albums.models.Artist;
+import org.wcci.albums.repository.TagRepository;
+import org.wcci.albums.services.ArtistService;
 
 import java.util.Collections;
 
@@ -23,25 +27,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ArtistController.class)
 @RunWith(SpringRunner.class)
 public class ArtistControllerWebLayerTest {
-    @Autowired
-    private MockMvc mockMvc;
-    @MockBean
-    private ArtistService artistService;
+	@Autowired
+	private MockMvc mockMvc;
+	@MockBean
+	private ArtistService artistService;
+	@MockBean
+	private TagRepository tagRepo;
+	private Artist testArtist;
 
-    private Artist testArtist;
-    @Before
-    public void setup(){
-        testArtist = new Artist("Jane");
-    }
+	@Before
+	public void setup() {
+		testArtist = new Artist("Jane");
+	}
 
-    @Test
-    public void shouldReturnAllArtists() throws Exception {
-        when(artistService.fetchAllArtists()).thenReturn(Collections.singletonList(testArtist));
-         mockMvc.perform(get("/api/artists"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].name", is(equalTo("Jane"))));
-    }
+	@Test
+	public void shouldReturnAllArtists() throws Exception {
+		when(artistService.fetchAllArtists()).thenReturn(Collections.singletonList(testArtist));
+		try {
+			mockMvc.perform(get("/api/artists")).andDo(print()).andExpect(status().isOk())
+					.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+					.andExpect(jsonPath("$", hasSize(1))).andExpect(jsonPath("$[0].name", is(equalTo("Jane"))));
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			throw new Exception("OH MY GOLLY!");
+		}
+	}
 }

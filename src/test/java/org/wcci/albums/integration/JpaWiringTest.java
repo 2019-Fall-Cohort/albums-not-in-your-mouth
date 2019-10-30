@@ -1,4 +1,8 @@
-package org.wcci.albums;
+package org.wcci.albums.integration;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -7,13 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
-import sun.security.krb5.internal.ccache.FileCredentialsCache;
-
-import javax.swing.text.html.HTML;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertEquals;
+import org.wcci.albums.models.Album;
+import org.wcci.albums.models.Artist;
+import org.wcci.albums.models.Comment;
+import org.wcci.albums.models.Tag;
+import org.wcci.albums.repository.AlbumRepository;
+import org.wcci.albums.repository.ArtistRepository;
+import org.wcci.albums.repository.TagRepository;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest

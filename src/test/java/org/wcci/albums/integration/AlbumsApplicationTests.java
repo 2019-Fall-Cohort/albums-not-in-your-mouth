@@ -1,4 +1,4 @@
-package org.wcci.albums;
+package org.wcci.albums.integration;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

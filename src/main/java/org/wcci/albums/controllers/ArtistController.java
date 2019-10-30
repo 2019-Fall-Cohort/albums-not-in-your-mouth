@@ -1,7 +1,12 @@
-package org.wcci.albums;
+package org.wcci.albums.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.wcci.albums.models.Artist;
+import org.wcci.albums.models.Comment;
+import org.wcci.albums.models.Tag;
+import org.wcci.albums.repository.TagRepository;
+import org.wcci.albums.services.ArtistService;
 
 import java.util.List;
 
@@ -21,6 +26,11 @@ public class ArtistController {
     @GetMapping("/{id}")
     public Artist fetchById(@PathVariable long id) {
         return artistService.fetchArtist(id);
+    }
+    
+    @PostMapping("")
+    public Artist addArtist(@RequestBody Artist artist) {
+    	return artistService.saveArtist(artist);
     }
 
     @PatchMapping("/{id}/add-comment")

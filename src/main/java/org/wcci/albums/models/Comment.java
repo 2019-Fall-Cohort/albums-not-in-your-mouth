@@ -1,4 +1,4 @@
-package org.wcci.albums;
+package org.wcci.albums.models;
 
 import javax.persistence.Embeddable;
 
