@@ -33,7 +33,7 @@ public class ArtistServiceTest {
 
     @Test
     public void shouldAddAlbumToRepo() {
-        Artist storedArtist = underTest.addArtist(mockArtist);
+        Artist storedArtist = underTest.saveArtist(mockArtist);
         verify(artistRepo).save(mockArtist);
     }
 

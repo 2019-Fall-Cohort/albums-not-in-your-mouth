@@ -7,8 +7,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -71,5 +70,42 @@ public class ArtistControllerTest {
                 "}"))
                .andDo(print())
                .andExpect(status().isOk());
+    }
+    @Test
+    public void fetchByIdReturnsSingleArtist() {
+        when(artistService.fetchArtist(1L)).thenReturn(testArtist);
+        Artist retrievedArtist = underTest.fetchById(1L);
+        assertThat(retrievedArtist, is(testArtist));
+    }
+
+    @Test
+    public void fetchByIdIsMappedCorrectlyAndReturnsAJsonArtist() throws Exception {
+        when(artistService.fetchArtist(1L)).thenReturn(testArtist);
+        mockMvc.perform(get("/api/artists/1"))
+               .andDo(print())
+               .andExpect(status().isOk())
+               .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+               .andExpect(jsonPath("$.name", is(equalTo("Jane"))));
+    }
+    @Test
+    public void addCommentAddsCommentsToSelectedArtist(){
+        when(artistService.fetchArtist(1L)).thenReturn(testArtist);
+        when(artistService.saveArtist(testArtist)).thenReturn(testArtist);
+        Comment testComment = new Comment("TESTING", "TESTY");
+        Artist commentedOnArtist = underTest.addComent(1L,testComment);
+        assertThat(commentedOnArtist.getComments(), contains(testComment));
+    }
+    @Test
+    public void addCommentToArtistMappingWorks() throws Exception {
+        when(artistService.fetchArtist(1L)).thenReturn(testArtist);
+        when(artistService.saveArtist(testArtist)).thenReturn(testArtist);
+        mockMvc.perform(patch("/api/artists/1/add-comment")
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .content("{\"content\":\"Test Content\",\"author\":\"Testy\"}"))
+               .andDo(print())
+               .andExpect(status().isOk())
+               .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+               .andExpect(jsonPath("$.comments[0].content", is(equalTo("Test Content"))))
+               .andExpect(jsonPath("$.comments[0].author", is(equalTo("Testy"))));
     }
 }
