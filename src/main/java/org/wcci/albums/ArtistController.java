@@ -10,6 +10,8 @@ import java.util.List;
 public class ArtistController {
     @Autowired
     private ArtistService artistService;
+    @Autowired
+    private TagRepository tagRepo;
 
     @GetMapping("")
     public List<Artist> fetchAll() {
@@ -22,9 +24,19 @@ public class ArtistController {
     }
 
     @PatchMapping("/{id}/add-comment")
-    public Artist addComent(@PathVariable long id, @RequestBody Comment comment) {
-        Artist artist =artistService.fetchArtist(id);
+    public Artist addComment(@PathVariable long id, @RequestBody Comment comment) {
+        Artist artist = artistService.fetchArtist(id);
         artist.addComment(comment);
         return artistService.saveArtist(artist);
+    }
+
+    @PatchMapping("/{id}/add-tag")
+    public Artist addTag(@PathVariable long id, @RequestBody Tag tag) {
+        Artist artist = artistService.fetchArtist(id);
+        tag.addArtist(artist);
+        tagRepo.save(tag);
+
+
+        return artistService.fetchArtist(id);
     }
 }

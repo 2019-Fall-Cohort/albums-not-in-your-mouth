@@ -1,21 +1,6 @@
 package org.wcci.albums;
 
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.core.Is.is;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -26,6 +11,17 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.Collections;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.core.Is.is;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 public class ArtistControllerTest {
 
     @InjectMocks
@@ -33,18 +29,20 @@ public class ArtistControllerTest {
 
     @Mock
     ArtistService artistService;
+    @Mock
+    TagRepository tagRepo;
     private MockMvc mockMvc;
     private Artist testArtist;
 
     @Before
-    public void setup(){
+    public void setup() {
         MockitoAnnotations.initMocks(this);
         testArtist = new Artist("Jane");
         mockMvc = MockMvcBuilders.standaloneSetup(underTest).build();
     }
 
     @Test
-    public void fetchAllReturnsListOfArtists(){
+    public void fetchAllReturnsListOfArtists() {
         when(artistService.fetchAllArtists()).thenReturn(Collections.singletonList(testArtist));
         List<Artist> retrievedArtists = underTest.fetchAll();
         assertThat(retrievedArtists, contains(testArtist));
@@ -60,17 +58,20 @@ public class ArtistControllerTest {
                .andExpect(jsonPath("$", hasSize(1)))
                .andExpect(jsonPath("$[0].name", is(equalTo("Jane"))));
     }
-    
+
     @Ignore
     @Test
     public void shouldAddArtist() throws Exception {
-        mockMvc.perform(post(".api/artists/add").content(
+        mockMvc.perform(post(".api/artists/add")
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .content(
                 "{" +
                         "\"name\": \"Jane\"" +
-                "}"))
+                        "}"))
                .andDo(print())
                .andExpect(status().isOk());
     }
+
     @Test
     public void fetchByIdReturnsSingleArtist() {
         when(artistService.fetchArtist(1L)).thenReturn(testArtist);
@@ -87,25 +88,54 @@ public class ArtistControllerTest {
                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                .andExpect(jsonPath("$.name", is(equalTo("Jane"))));
     }
+
     @Test
-    public void addCommentAddsCommentsToSelectedArtist(){
+    public void addCommentAddsCommentsToSelectedArtist() {
         when(artistService.fetchArtist(1L)).thenReturn(testArtist);
         when(artistService.saveArtist(testArtist)).thenReturn(testArtist);
         Comment testComment = new Comment("TESTING", "TESTY");
-        Artist commentedOnArtist = underTest.addComent(1L,testComment);
+        Artist commentedOnArtist = underTest.addComment(1L, testComment);
         assertThat(commentedOnArtist.getComments(), contains(testComment));
     }
+
     @Test
     public void addCommentToArtistMappingWorks() throws Exception {
         when(artistService.fetchArtist(1L)).thenReturn(testArtist);
         when(artistService.saveArtist(testArtist)).thenReturn(testArtist);
         mockMvc.perform(patch("/api/artists/1/add-comment")
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
-                        .content("{\"content\":\"Test Content\",\"author\":\"Testy\"}"))
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content("{\"content\":\"Test Content\",\"author\":\"Testy\"}"))
                .andDo(print())
                .andExpect(status().isOk())
                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                .andExpect(jsonPath("$.comments[0].content", is(equalTo("Test Content"))))
                .andExpect(jsonPath("$.comments[0].author", is(equalTo("Testy"))));
     }
+
+    @Test
+    public void addTagToArtist() {
+        when(artistService.fetchArtist(1L)).thenReturn(testArtist);
+        Tag testTag = new Tag("Test Tag");
+        underTest.addTag(1L, testTag);
+        testTag.addArtist(testArtist);
+        verify(tagRepo).save(testTag);
+        verify(artistService, times(2)).fetchArtist(1L);
+    }
+    @Test
+    public void addTagToArtistMapping() throws Exception {
+        when(artistService.fetchArtist(1L)).thenReturn(testArtist);
+        Tag testTag = new Tag("Test Tag");
+        testTag.addArtist(testArtist);
+
+        mockMvc.perform(patch("/api/artists/1/add-tag")
+                       .contentType(MediaType.APPLICATION_JSON_UTF8)
+                       .content("{\"name\":\"Test Tag\"}"))
+               .andDo(print())
+               .andExpect(status().isOk())
+               .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
+
+        verify(tagRepo).save(testTag);
+        verify(artistService, times(2)).fetchArtist(1L);
+    }
+
 }
