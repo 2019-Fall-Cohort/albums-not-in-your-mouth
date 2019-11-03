@@ -18,7 +18,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.wcci.albums.models.Artist;
 
 import static org.hamcrest.CoreMatchers.is;
-
+@Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class HttpRequestTest {

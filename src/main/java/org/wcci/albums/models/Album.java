@@ -1,7 +1,15 @@
 package org.wcci.albums.models;
 
-import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Album {
@@ -9,6 +17,7 @@ public class Album {
 	@GeneratedValue
 	private Long id;
 	private String title;
+	@JsonIgnore
 	@ManyToOne
 	private Artist artist;
 	@ManyToMany(mappedBy = "albums")
@@ -19,6 +28,7 @@ public class Album {
 	public Album(String title, Artist artist) {
 		this.title = title;
 		this.artist = artist;
+		this.tags = new ArrayList<Tag>();
 
 	}
 	public Long getId() {
@@ -36,6 +46,7 @@ public class Album {
 	public List<Tag> getTags() {
 		return tags;
 	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
