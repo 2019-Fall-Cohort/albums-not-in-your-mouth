@@ -122,7 +122,7 @@ public class ArtistControllerTest {
     public void addTagToArtist() {
         when(artistService.fetchArtist(1L)).thenReturn(testArtist);
         Tag testTag = new Tag("Test Tag");
-        underTest.addTag(1L, testTag);
+        underTest.addTag(1L, "Test Tag");
         testTag.addArtist(testArtist);
         verify(tagRepo).save(testTag);
         verify(artistService, times(2)).fetchArtist(1L);
@@ -133,7 +133,7 @@ public class ArtistControllerTest {
         Tag testTag = new Tag("Test Tag");
         testTag.addArtist(testArtist);
 
-        mockMvc.perform(patch("/api/artists/1/add-tag")
+        mockMvc.perform(patch("/api/artists/1/add-tag/Test Tag")
                        .contentType(MediaType.APPLICATION_JSON_UTF8)
                        .content("{\"name\":\"Test Tag\"}"))
                .andDo(print())

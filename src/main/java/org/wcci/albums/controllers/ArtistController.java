@@ -9,6 +9,7 @@ import org.wcci.albums.repository.TagRepository;
 import org.wcci.albums.services.ArtistService;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/artists")
@@ -40,9 +41,17 @@ public class ArtistController {
         return artistService.saveArtist(artist);
     }
 
-    @PatchMapping("/{id}/add-tag")
-    public Artist addTag(@PathVariable long id, @RequestBody Tag tag) {
+    @PatchMapping("/{id}/add-tag/{tagName}")
+    public Artist addTag(@PathVariable long id, @PathVariable String tagName) {
         Artist artist = artistService.fetchArtist(id);
+        Tag tag;
+        Optional<Tag> tagOptional = tagRepo.findByName(tagName);
+        if(tagOptional.isPresent()){
+            tag= tagOptional.get();
+        }else{
+            tag=new Tag(tagName);
+        }
+
         tag.addArtist(artist);
         tagRepo.save(tag);
 

@@ -1,9 +1,6 @@
 package org.wcci.albums.models;
 
 import javax.persistence.*;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.List;
 
 @Entity
@@ -12,7 +9,6 @@ public class Album {
 	@GeneratedValue
 	private Long id;
 	private String title;
-	@JsonIgnore
 	@ManyToOne
 	private Artist artist;
 	@ManyToMany(mappedBy = "albums")

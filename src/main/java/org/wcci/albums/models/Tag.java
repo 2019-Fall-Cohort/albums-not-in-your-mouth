@@ -1,5 +1,7 @@
 package org.wcci.albums.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -13,8 +15,10 @@ public class Tag {
     @GeneratedValue
     private Long id;
     private String name;
+    @JsonIgnore
     @ManyToMany
     private List<Album> albums;
+    @JsonIgnore
     @ManyToMany
     private List<Artist> artists;
 
